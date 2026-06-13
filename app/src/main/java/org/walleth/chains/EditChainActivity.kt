@@ -104,6 +104,7 @@ open class EditChainActivity : BaseSubActivity() {
                         networkId = newChainNetworkId.text?.toString()?.toLongOrNull()?:chainId.toLong(),
                         shortName = name,
                         rpc = listOf(rpc).plus(chainInfo?.rpc ?: emptyList()).distinct(),
+                        rpcIsUserConfigured = true,
                         faucets = mutableListOf<String>().plus(faucet?.let { listOf(it) } ?: emptyList()).plus(chainInfo?.rpc ?: emptyList()).distinct(),
                         infoURL = newChainInfoURL.text.toString(),
                         nativeCurrency = NativeCurrency(nativeCurrencySymbol, newChainNativeCurrencyName.text.toString(), nativeCurrencyDecimals.toInt())

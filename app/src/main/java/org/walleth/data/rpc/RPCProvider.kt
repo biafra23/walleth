@@ -14,6 +14,7 @@ import org.walleth.data.chaininfo.ChainInfo
 import org.walleth.data.config.DappNodeMode
 import org.walleth.data.config.Settings
 import org.walleth.util.getRPCEndpoint
+import org.walleth.util.getUserConfiguredRPCEndpoint
 import java.math.BigInteger
 
 class ConsoleLoggingTransportWrapper(private val transport: RPCTransport) : RPCTransport {
@@ -49,6 +50,13 @@ class RPCProviderImpl(var network: ChainInfoProvider,
         } else {
             if (settings.dappNodeMode == DappNodeMode.USE_WHEN_POSSIBLE) {
                 return getDappNodeDescribedRPC()
+            }
+
+            if (rpcIsUserConfigured) {
+                // user explicitly configured the RPC for this chain - use it exclusively, no min3 / no fallback
+                return getUserConfiguredRPCEndpoint()?.let {
+                    DescribedRPC(HttpTransport(it, okHttpClient, settings.logRPCRequests), "RPC $it")
+                }
             }
 
             getMin3BootnNdesByChainId(ChainId(chainId))?.let { bootNodes ->

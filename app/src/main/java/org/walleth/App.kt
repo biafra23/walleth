@@ -51,6 +51,7 @@ import org.walleth.data.tokens.CurrentTokenProviderImpl
 import org.walleth.migrations.ChainAddingAndRecreatingMigration
 import org.walleth.migrations.EIP1559Migration
 import org.walleth.migrations.TransactionExtendingMigration
+import org.walleth.migrations.UserConfiguredRPCMigration
 import org.walleth.nfc.NFCCredentialStore
 import org.walleth.notifications.TransactionNotificationService
 import org.walleth.overview.TransactionListViewModel
@@ -90,7 +91,8 @@ open class App : MultiDexApplication() {
                             ChainAddingAndRecreatingMigration(3),
                             ChainAddingAndRecreatingMigration(4),
                             TransactionExtendingMigration(),
-                            EIP1559Migration()
+                            EIP1559Migration(),
+                            UserConfiguredRPCMigration()
                     ).build()
         }
 
