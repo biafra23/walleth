@@ -21,3 +21,23 @@ jobs:
       # -PsingleFlavor limits the build to the forFDroid flavors to keep CI fast.
       - name: Assemble debug + unit tests
         run: ./gradlew -PsingleFlavor assembleDebug testNoGethForFDroidOnlineDebugUnitTest --stacktrace
+
+      # Collect the produced debug APKs and tag each filename with the short
+      # commit hash so every downloaded artifact has a unique name.
+      - name: Stage APKs
+        id: stage
+        run: |
+          short_sha="${GITHUB_SHA:0:6}"
+          echo "short_sha=$short_sha" >> "$GITHUB_OUTPUT"
+          mkdir -p artifacts
+          find app/build/outputs/apk -name '*-debug.apk' -print0 | while IFS= read -r -d '' apk; do
+            cp "$apk" "artifacts/$(basename "$apk" .apk)-$short_sha.apk"
+          done
+          ls -1 artifacts
+
+      - name: Upload APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: walleth-debug-${{ steps.stage.outputs.short_sha }}
+          path: artifacts/*.apk
+          if-no-files-found: error
