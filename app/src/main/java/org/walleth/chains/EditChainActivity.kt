@@ -104,8 +104,11 @@ open class EditChainActivity : BaseSubActivity() {
                         networkId = newChainNetworkId.text?.toString()?.toLongOrNull()?:chainId.toLong(),
                         shortName = name,
                         rpc = listOf(rpc).plus(chainInfo?.rpc ?: emptyList()).distinct(),
-                        rpcIsUserConfigured = true,
-                        faucets = mutableListOf<String>().plus(faucet?.let { listOf(it) } ?: emptyList()).plus(chainInfo?.rpc ?: emptyList()).distinct(),
+                        // only treat the RPC as user-configured when creating a chain or when the
+                        // entered RPC actually differs from the original - otherwise editing an
+                        // unrelated field (name, currency, ...) would silently disable min3
+                        rpcIsUserConfigured = chainInfo?.let { it.rpcIsUserConfigured || rpc != it.rpc.firstOrNull() } ?: true,
+                        faucets = mutableListOf<String>().plus(faucet?.let { listOf(it) } ?: emptyList()).plus(chainInfo?.faucets ?: emptyList()).distinct(),
                         infoURL = newChainInfoURL.text.toString(),
                         nativeCurrency = NativeCurrency(nativeCurrencySymbol, newChainNativeCurrencyName.text.toString(), nativeCurrencyDecimals.toInt())
                 ))
