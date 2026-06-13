@@ -26,7 +26,9 @@ buildscript {
         classpath 'com.github.bjoernq:unmockplugin:0.7.9'
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.39.0'
         classpath 'com.trevjonez.composer:plugin:1.0.0-rc08'
-        classpath "com.jaredsburrows:gradle-license-plugin:0.8.90"
+        classpath("com.jaredsburrows:gradle-license-plugin:0.9.8") {
+            exclude group: 'org.jetbrains.kotlin'
+        }
         classpath 'app.cash.exhaustive:exhaustive-gradle:0.2.0'
     }
 }
