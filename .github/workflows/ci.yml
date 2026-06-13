@@ -4,15 +4,20 @@ on:
   push:
   workflow_dispatch:
 
+# Opt JS-based actions into Node.js 24 (Node 20 is being deprecated on runners).
+# Covers actions that don't yet have a Node 24 major (e.g. upload-artifact).
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # Gradle 7.2 / AGP 7.0.3 / Kotlin 1.5.31 require JDK 11.
       - name: Set up JDK 11
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '11'
@@ -22,20 +27,18 @@ jobs:
       - name: Assemble debug + unit tests
         run: ./gradlew -PsingleFlavor assembleDebug testNoGethForFDroidOnlineDebugUnitTest --stacktrace
 
-      # Collect the produced debug APKs and tag each filename with the short
-      # commit hash so every downloaded artifact has a unique name.
-      - name: Stage APKs
+      # Tag the default-flavor APK with the short commit hash so each download is unique.
+      - name: Stage APK
         id: stage
         run: |
           short_sha="${GITHUB_SHA:0:6}"
           echo "short_sha=$short_sha" >> "$GITHUB_OUTPUT"
           mkdir -p artifacts
-          find app/build/outputs/apk -name '*-debug.apk' -print0 | while IFS= read -r -d '' apk; do
-            cp "$apk" "artifacts/$(basename "$apk" .apk)-$short_sha.apk"
-          done
+          apk=$(find app/build/outputs/apk/noGethForFDroidOnline/debug -name '*-debug.apk' | head -n1)
+          cp "$apk" "artifacts/$(basename "$apk" .apk)-$short_sha.apk"
           ls -1 artifacts
 
-      - name: Upload APKs
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: walleth-debug-${{ steps.stage.outputs.short_sha }}
