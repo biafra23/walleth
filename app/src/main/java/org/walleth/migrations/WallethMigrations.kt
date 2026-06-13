@@ -3,6 +3,12 @@ package org.walleth.migrations
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
+class UserConfiguredRPCMigration : Migration(7, 8) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL("ALTER TABLE chains ADD COLUMN rpcIsUserConfigured INTEGER NOT NULL DEFAULT(0)")
+    }
+}
+
 class EIP1559Migration : Migration(6, 7) {
     override fun migrate(database: SupportSQLiteDatabase) {
         database.execSQL("ALTER TABLE transactions ADD COLUMN maxPriorityFeePerGas BLOB")

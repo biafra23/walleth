@@ -30,6 +30,10 @@ data class ChainInfo(
 
         var useEIP1559: Boolean = false,
 
+        // set when the user explicitly configures an RPC for this chain via the chain editor;
+        // such an RPC is used exclusively - no min3 and no fallback to other endpoints
+        var rpcIsUserConfigured: Boolean = false,
+
         @ColumnInfo(name = "softDeleted")
         override var deleted: Boolean = false,
 
